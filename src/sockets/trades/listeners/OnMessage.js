@@ -17,7 +17,7 @@ export class OnMessage {
         }
     }
 
-    async #handleMessageData(message) {
+    #handleMessageData(message) {
         if (this.expectStates.price) {
             this.#handlePriceData(message);
         } else if (this.expectStates.sentiment) {

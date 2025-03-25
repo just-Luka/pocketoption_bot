@@ -1,6 +1,5 @@
 import { TradeSocket } from "./src/sockets/trades/TradeSocket.js";
 
-// tradingSocket.run(new AlgorithmC1());
 (async () => {
     const tradeSocket = new TradeSocket('#BA_otc', true);
     tradeSocket.connect();
