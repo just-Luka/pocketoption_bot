@@ -3,10 +3,6 @@ export class Heartbeat {
         this.ws = ws;
     }
 
-    /**
-     * This function adds two numbers together.
-     * @returns {void} The sum of a and b.
-     */
     execute() {
         setInterval(() => {
             const now = new Date();

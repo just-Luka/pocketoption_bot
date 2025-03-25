@@ -1,11 +1,10 @@
 import { randomBytes } from 'crypto';
 
-export const wsUrlDemo = // [ WEBSOCKET URL FOR DEMO ]; EU/RUS, US NA or US SA servers based on your location
-export const wsUrlReal = // [ WEBSOCKET URL FOR REAL ];
+export const wsUrlDemo = 'wss://demo-api-eu.po.market/socket.io/?EIO=4&transport=websocket';
+export const wsUrlReal = // [ WEBSOCKET URL FOR REAL ]; EU/RUS, US NA or US SA servers based on your location
 
 export const authMessageDemo = // [ WEBSOCKET AUTH MESSAGE FOR REAL DEMO ];
 export const authMessageReal = // [ WEBSOCKET AUTH MESSAGE FOR REAL ACCOUNT ];
-// latestactivity (probably the time of auth)
 
 const generateSecWebSocketKey = () => {
     return randomBytes(16).toString('base64');

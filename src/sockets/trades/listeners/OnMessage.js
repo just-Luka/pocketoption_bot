@@ -3,10 +3,6 @@ export class OnMessage {
         this.ws = ws;
         this.authMessage = authMessage;
         this.epic = epic;
-
-        this.sentimentPercents = [];
-        this.marketPrices = [];
-
         this.expectStates = {
             price: false,
             sentiment: false,
@@ -15,6 +11,10 @@ export class OnMessage {
             balanceUpdate: false,
             auth: false,
         };
+        this.latest = {
+            sentimentPercent: null,
+            marketPrice: null,
+        }
     }
 
     async #handleMessageData(message) {
@@ -23,12 +23,10 @@ export class OnMessage {
         } else if (this.expectStates.sentiment) {
             this.#handleSentimentData(message);
         } else if (this.expectStates.openOrder) {
-            //KEY is: successopenOrder {"id":"154e9d65-f500-4368-9976-7ca4a0904c82","openTime":"2025-03-21 19:03:25","closeTime":"2025-03-21 19:03:30","openTimestamp":1742583805,"closeTimestamp":1742583810,"uid":84890061,"isDemo":1,"amount":1,"profit":0.92,"percentProfit":92,"percentLoss":100,"openPrice":162.23,"copyTicket":"","closePrice":0,"command":0,"asset":"#BA_otc","requestId":12260952,"openMs":370,"optionType":100,"isCopySignal":false,"currency":"USD"
-            console.log(message);
+            console.log("✅ Open Order:", message);
             this.expectStates.openOrder = false;
         } else if (this.expectStates.closeOrder) {
-            // KEY is: successcloseOrder {"profit":1.92,"deals":[{"id":"154e9d65-f500-4368-9976-7ca4a0904c82","openTime":"2025-03-21 19:03:25","closeTime":"2025-03-21 19:03:30","openTimestamp":1742583805,"closeTimestamp":1742583810,"uid":84890061,"amount":1,"profit":0.92,"percentProfit":92,"percentLoss":100,"openPrice":162.23,"closePrice":162.27,"command":0,"asset":"#BA_otc","isDemo":1,"copyTicket":"","closeMs":0,"optionType":100,"openMs":370,"currency":"USD","amountUSD":1}]}
-            console.log(message);
+            console.log("✅ Close Order:", message);
             this.expectStates.closeOrder = false;
         } else if (this.expectStates.balanceUpdate) {
             // Balance update
@@ -39,17 +37,23 @@ export class OnMessage {
     }
 
     #handlePriceData(message) {
-        const priceData = JSON.parse(message);
-        const price = priceData[0][2];
-        this.marketPrices.push(price);
-        this.expectStates.price = false;
+        try {
+            const priceData = JSON.parse(message);
+            this.latest.marketPrice = priceData[0][2] ?? null;
+            this.expectStates.price = false;
+        } catch (error) {
+            console.error("❌ Failed to parse price data:", error.message);
+        }
     }
 
     #handleSentimentData(message) {
-        const sentimentData = JSON.parse(message);
-        const sentimentPercent = sentimentData[0][1];
-        this.sentimentPercents.push(sentimentPercent);
-        this.expectStates.sentiment = false;
+        try {
+            const sentimentData = JSON.parse(message);
+            this.latest.sentimentPercent = sentimentData[0][1] ?? null;
+            this.expectStates.sentiment = false;
+        } catch (error) {
+            console.error("❌ Failed to parse sentiment data:", error.message);
+        }
     }
 
     #setStateBasedOnMessage(key) {
@@ -62,9 +66,7 @@ export class OnMessage {
             'successauth': () => this.expectStates.auth = true,
         };
 
-        if (handlers[key]) {
-            handlers[key]();
-        }
+        if (handlers[key]) handlers[key]();
     }
 
     #subscribeToMarket() {
@@ -82,6 +84,13 @@ export class OnMessage {
         console.log('🔹 Step 4: Sending authentication...');
     }
 
+    #resetLatest() {
+        this.latest = {
+            sentimentPercent: null,
+            marketPrice: null,
+        }
+    }
+
     execute(message) {
         const key = message.match(/^451-\["([^"]+)/)?.[1];
 
@@ -95,16 +104,13 @@ export class OnMessage {
             console.log('🔄 Received "2" (Ping), sending "3" (Pong)...');
             this.ws.send('3');
         } else if (key) {
-            console.log('🔴🟢 Received state: ' + key);
+            // console.log('🔴🟢 Received state: ' + key);
+            this.#resetLatest();
             this.#setStateBasedOnMessage(key);
         } else {
-            console.log('🎁 Received value');
             this.#handleMessageData(message);
         }
 
-        return {
-            'sentimentPercents': this.sentimentPercents,
-            'marketPrices': this.marketPrices,
-        }
+        return this.latest;
     }
 }
