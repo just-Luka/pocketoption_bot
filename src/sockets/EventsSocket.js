@@ -1,13 +1,13 @@
-import { headers, wsChatUrl, userInit } from "../config.js";
+import { headers, wsEventsUrl, sessionToken } from "../config.js";
 
-class ChatSocket {
+class EventsSocket {
     constructor() {
         this.ws = null;
     }
 
     connect() {
         try {
-            this.ws = new WebSocket(wsChatUrl, {headers});
+            this.ws = new WebSocket(wsEventsUrl, {headers});
 
             this.ws.on('open', () => this.#onOpen());
             this.ws.on('message', (data) => this.#onMessage(data));
@@ -23,7 +23,7 @@ class ChatSocket {
     }
 
     #onMessage(data) {
-        // Messages
+        // events
     }
 
     #onError(error) {

@@ -26,8 +26,6 @@ export class TradeSocket extends Socket {
         } catch (error) {
             terminateScript(`❌ Error during WebSocket setup: ${error.message}`);
         }
-
-        return this;
     }
 
     #onOpen() {
