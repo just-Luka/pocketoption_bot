@@ -36,18 +36,18 @@ git clone https://github.com/just-Luka/pocketoption_bot.git
 
 ### Stream (Demo Account)
 ```js
-    import { TradeSocket } from "./src/sockets/trades/TradeSocket.js";
+import { TradeSocket } from "./src/sockets/trades/TradeSocket.js";
 
-    const tradeSocket = new TradeSocket('#BA_otc', true);
-    tradeSocket.connect();
+const tradeSocket = new TradeSocket('#BA_otc', true);
+tradeSocket.connect();
 ```
 
 ### Stream (Real Account)
 ```js
-    import { TradeSocket } from "./src/sockets/trades/TradeSocket.js";
+import { TradeSocket } from "./src/sockets/trades/TradeSocket.js";
 
-    const tradeSocket = new TradeSocket('#BA_otc', false);
-    tradeSocket.connect();
+const tradeSocket = new TradeSocket('#BA_otc', false);
+tradeSocket.connect();
 ```
 
 ### Example
