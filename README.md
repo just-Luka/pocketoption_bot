@@ -86,10 +86,4 @@ node index.js <epic>
 Example: `node index.js #BA_otc`
 
 Or use Docker with the epic passed as an argument.
-<br>
-<br>
-<br>
-If this project was useful for someone.
-<br>
-TRON (TRC20) `TDXMLzNVoXQweGRf4fcKH79zzRuJMCS831`
 
