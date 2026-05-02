@@ -1,6 +1,8 @@
-import { headers, wsEventsUrl, sessionToken } from "../config.js";
+import { WebSocket } from "ws";
+import { headers, wsEventsUrl } from "../config.js";
+import { terminateScript } from "../utils.js";
 
-class EventsSocket {
+export class EventsSocket {
     constructor() {
         this.ws = null;
     }

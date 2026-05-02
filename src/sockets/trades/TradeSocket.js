@@ -12,25 +12,33 @@ export class TradeSocket extends Socket {
         this.ws = null;
         this.onMessageListener = null;
         this.listeners = [];
+        this.heartbeat = null;
     }
 
     connect() {
-        try {
-            this.ws = new WebSocket(this.wsURL(), {headers});
-            this.onMessageListener = new OnMessage(this.ws, this.authMessage(), this.epic);
+        return new Promise((resolve) => {
+            try {
+                this.ws = new WebSocket(this.wsURL(), {headers});
+                this.onMessageListener = new OnMessage(this.ws, this.authMessage(), this.epic);
 
-            this.ws.on('open', () => this.#onOpen());
-            this.ws.on('message', (data) => this.#onMessage(data));
-            this.ws.on('error', (error) => this.#onError(error));
-            this.ws.on('close', () => this.#onClose());
-        } catch (error) {
-            terminateScript(`❌ Error during WebSocket setup: ${error.message}`);
-        }
+                this.ws.on('open', () => { this.#onOpen(); resolve(); });
+                this.ws.on('message', (data) => this.#onMessage(data));
+                this.ws.on('error', (error) => this.#onError(error));
+                this.ws.on('close', () => this.#onClose());
+            } catch (error) {
+                terminateScript(`❌ Error during WebSocket setup: ${error.message}`);
+            }
+        });
+    }
+
+    getWS() {
+        return this.ws;
     }
 
     #onOpen() {
         console.log('✅ Connected to WebSocket');
-        new Heartbeat(this.ws).execute();
+        this.heartbeat = new Heartbeat(this.ws);
+        this.heartbeat.execute();
     }
 
     #onMessage(data) {
@@ -47,6 +55,7 @@ export class TradeSocket extends Socket {
     }
 
     #onClose() {
+        this.heartbeat?.stop();
         terminateScript('Connection was closed, exiting...');
     }
 

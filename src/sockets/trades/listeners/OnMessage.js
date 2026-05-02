@@ -39,7 +39,7 @@ export class OnMessage {
     #handlePriceData(message) {
         try {
             const priceData = JSON.parse(message);
-            this.latest.marketPrice = priceData[0][2] ?? null;
+            this.latest.marketPrice = priceData?.[0]?.[2] ?? null;
             this.expectStates.price = false;
         } catch (error) {
             console.error("❌ Failed to parse price data:", error.message);
@@ -49,7 +49,7 @@ export class OnMessage {
     #handleSentimentData(message) {
         try {
             const sentimentData = JSON.parse(message);
-            this.latest.sentimentPercent = sentimentData[0][1] ?? null;
+            this.latest.sentimentPercent = sentimentData?.[0]?.[1] ?? null;
             this.expectStates.sentiment = false;
         } catch (error) {
             console.error("❌ Failed to parse sentiment data:", error.message);

@@ -1,6 +1,8 @@
-import { headers, wsChatUrl, userInit } from "../config.js";
+import { WebSocket } from "ws";
+import { headers, wsChatUrl } from "../config.js";
+import { terminateScript } from "../utils.js";
 
-class ChatSocket {
+export class ChatSocket {
     constructor() {
         this.ws = null;
     }
