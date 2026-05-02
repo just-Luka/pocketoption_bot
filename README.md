@@ -39,7 +39,7 @@ git clone https://github.com/just-Luka/pocketoption_bot.git
 import { TradeSocket } from "./src/sockets/trades/TradeSocket.js";
 
 const tradeSocket = new TradeSocket('#BA_otc', true);
-tradeSocket.connect();
+await tradeSocket.connect();
 ```
 
 ### Stream (Real Account)
@@ -47,7 +47,7 @@ tradeSocket.connect();
 import { TradeSocket } from "./src/sockets/trades/TradeSocket.js";
 
 const tradeSocket = new TradeSocket('#BA_otc', false);
-tradeSocket.connect();
+await tradeSocket.connect();
 ```
 
 ### Example
@@ -57,20 +57,35 @@ tradeSocket.connect();
 import { TradeSocket } from "./src/sockets/trades/TradeSocket.js";
 
 (async () => {
-    const tradeSocket = new TradeSocket('#BA_otc', true);
-    tradeSocket.connect();
+    const epic = process.argv[2];
+    if (!epic) {
+        console.error('Usage: node index.js <epic>');
+        process.exit(1);
+    }
+    const tradeSocket = new TradeSocket(epic, true);
+
+    await tradeSocket.connect();
+    const ws = tradeSocket.getWS();
 
     for await (const { marketPrice, sentimentPercent } of tradeSocket.dataStream()) {
-        console.log("📈 Market Price:", marketPrice, " | 📊 Sentiment:", sentimentPercent);
+        const now = new Date();
+        const timeStr = now.toTimeString().split(' ')[0];
 
-        // new TradingAlgorithm(marketPrice, sentimentPercent).start();
+        console.log(`[${timeStr}] 📈 Market Price: ${marketPrice} | 📊 Sentiment: ${sentimentPercent}`);
+        // NewTradingAlgorithm(marketPrice, sentimentPercent, epic, ws);
     }
 })();
 ```
 
 ### Run
 
-Type `node index.js` or use Docker.
+```
+node index.js <epic>
+```
+
+Example: `node index.js #BA_otc`
+
+Or use Docker with the epic passed as an argument.
 <br>
 <br>
 <br>
